@@ -64,7 +64,7 @@ module.exports.deleteMovie = (req, res, next) => {
 
   movieSchema
     .findById(movieId)
-    .orFail(new NotFoundError('Фильм с указанным _id не найдена.'))
+    .orFail(new NotFoundError('Фильм с указанным _id не найден.'))
     .then((movie) => {
       if (movie.owner.toString() !== userId) {
         return next(new ForbiddenError('Отказано в доступе! Данный фильм не принадлежит пользователю!'));
