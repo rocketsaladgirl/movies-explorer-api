@@ -7,12 +7,7 @@ const ForbiddenError = require('../errors/ForbiddenError');
 // Возвращаем сохранённые текущим пользователем фильмы
 module.exports.getMovies = (req, res, next) => {
   movieSchema.find({ owner: req.user._id })
-    .then((movies) => {
-      if (!movies) {
-        throw new NotFoundError('Данные не найдены!');
-      }
-      res.send(movies);
-    })
+    .then((movies) => res.send(movies.reverse()))
     .catch(next);
 };
 
@@ -58,6 +53,7 @@ module.exports.createMovie = (req, res, next) => {
     });
 };
 
+// Удаляем фильм
 module.exports.deleteMovie = (req, res, next) => {
   const { movieId } = req.params;
   const userId = req.user._id;
@@ -75,51 +71,3 @@ module.exports.deleteMovie = (req, res, next) => {
     })
     .catch(next);
 };
-
-// module.exports.addLike = (req, res, next) => {
-//   cardSchema
-//     .findByIdAndUpdate(
-//       req.params.cardId,
-//       { $addToSet: { likes: req.user._id } },
-//       { new: true },
-//     )
-//     .then((card) => {
-//       if (!card) {
-//         return next(new NotFoundError('Карточка с указанным _id не найдена.'));
-//       }
-
-//       return res.status(200)
-//         .send(card);
-//     })
-//     .catch((err) => {
-//       if (err.name === 'CastError') {
-//         return next(new BadRequestError('Переданы некорректные данные для постановки лайка.'));
-//       }
-
-//       return next(err);
-//     });
-// };
-
-// module.exports.deleteLike = (req, res, next) => {
-//   cardSchema
-//     .findByIdAndUpdate(
-//       req.params.cardId,
-//       { $pull: { likes: req.user._id } },
-//       { new: true },
-//     )
-//     .then((card) => {
-//       if (!card) {
-//         return next(new NotFoundError('Карточка с указанным _id не найдена.'));
-//       }
-
-//       return res.status(200)
-//         .send(card);
-//     })
-//     .catch((err) => {
-//       if (err.name === 'CastError') {
-//         return next(new BadRequestError('Переданы некорректные данные для снятия лайка.'));
-//       }
-
-//       return next(err);
-//     });
-// };

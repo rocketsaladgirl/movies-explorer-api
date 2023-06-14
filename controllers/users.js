@@ -33,32 +33,23 @@ const ConflictError = require('../errors/ConflictError');
 
 // module.exports.getUserById = (req, res, next) => findUser(req.params.userId, res, next);
 
-// module.exports.getUserById = (req, res, next) => {
-//   const { userId } = req.params;
-
-//   userSchema
-//     .findById(userId)
-//     .then((user) => {
-//       if (!user) {
-//         throw new NotFoundError('Пользователь по указанному _id не найден');
-//       }
-//       res.send(user);
-//     })
-//     .catch((err) => {
-//       if (err.name === 'CastError') {
-//       return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
-//       }
-//       return next(err);
-//     });
-// };
-
 // Получаем информацию о текущем пользователе
 module.exports.getUser = (req, res, next) => {
+  const { userId } = req.params;
+
   userSchema
-    .findById(req.user._id)
-    .orFail(() => next(new NotFoundError('Пользователь не найден')))
-    .then((user) => res.send(user))
-    .catch(next);
+    .findById(userId)
+    .orFail()
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(new NotFoundError('Переданы некорректные данные'));
+      }
+      if (err.name === 'DocumentNotFoundError') {
+        return next(new BadRequestError('Пользователь по указанному _id не найден'));
+      }
+      return next(res);
+    });
 };
 
 // Создаем пользователя

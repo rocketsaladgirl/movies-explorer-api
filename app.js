@@ -5,10 +5,11 @@ const helmet = require('helmet');
 const { errors } = require('celebrate');
 const cors = require('cors');
 
-const router = require('./routes/index');
+const router = require('./routes');
 
 const handleError = require('./middlewares/handelError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const auth = require('./middlewares/auth');
 
 const {
   MONGO_URL = 'mongodb://127.0.0.1:27017/bitfilmsdb',
@@ -24,6 +25,7 @@ app.use(express.json());
 
 app.use(requestLogger);
 
+app.use(auth);
 app.use(router);
 
 app.use(errorLogger);
