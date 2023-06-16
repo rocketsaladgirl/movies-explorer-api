@@ -11,6 +11,8 @@ const { validationCreateUser, validationLogin } = require('../middlewares/valida
 
 const NotFoundError = require('../errors/NotFoundError');
 
+const { URL_NOT_FOUND } = require('../utils/constants');
+
 router.post('/signup', validationCreateUser, createUser);
 router.post('/signin', validationLogin, login);
 
@@ -20,7 +22,7 @@ router.use('/users', userRoutes);
 router.use('/movies', movieRoutes);
 
 router.use('/*', (req, res, next) => {
-  next(new NotFoundError('404: Ошибка! Данные не найдены!'));
+  next(new NotFoundError(URL_NOT_FOUND));
 });
 
 module.exports = router;

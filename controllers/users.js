@@ -8,6 +8,15 @@ const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
 
+const {
+  EMAIL_ALREADY_EXISTS,
+  WRONG_PROFILE,
+  WRONG_USER,
+  USER_ID_NOT_FOUND,
+  USER_NOT_FOUND,
+  WRONG_DATA,
+} = require('../utils/constants');
+
 const { jwtKey } = require('../utils/option');
 
 module.exports.getUser = (req, res, next) => {
@@ -15,14 +24,14 @@ module.exports.getUser = (req, res, next) => {
     .findById(req.user._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь не найден');
+        throw new NotFoundError(USER_NOT_FOUND);
       }
       res.status(200)
         .send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(BadRequestError('Переданы некорректные данные'));
+        next(BadRequestError(WRONG_DATA));
       } else {
         next(err);
       }
@@ -55,10 +64,10 @@ module.exports.createUser = (req, res, next) => {
           ))
         .catch((err) => {
           if (err.code === 11000) {
-            return next(new ConflictError('Пользователь с таким email уже существует'));
+            return next(new ConflictError(EMAIL_ALREADY_EXISTS));
           }
           if (err.name === 'ValidationError') {
-            return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+            return next(new BadRequestError(WRONG_USER));
           }
           return next(err);
         });
@@ -85,13 +94,13 @@ module.exports.updateUser = (req, res, next) => {
       },
     )
     .orFail(() => {
-      throw new NotFoundError('Пользователь с указанным _id не найден');
+      throw new NotFoundError(USER_ID_NOT_FOUND);
     })
     .then((user) => res.status(200)
       .send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
+        return next(new BadRequestError(WRONG_PROFILE));
       }
       return next(err);
     });

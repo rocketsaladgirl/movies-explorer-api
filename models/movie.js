@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
+const { WRONG_URL } = require('../utils/constants');
+
 // eslint-disable-next-line function-paren-newline
 const movieSchema = new mongoose.Schema({
   country: {
@@ -27,7 +29,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: (v) => validator.isUrl(v),
-      message: 'Некорректная ссылка',
+      message: WRONG_URL,
     },
     required: true,
   },
@@ -35,7 +37,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: (v) => validator.isUrl(v),
-      message: 'Некорректная ссылка',
+      message: WRONG_URL,
     },
     required: true,
   },
@@ -43,7 +45,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: (v) => validator.isUrl(v),
-      message: 'Некорректная ссылка',
+      message: WRONG_URL,
     },
     required: true,
   },
