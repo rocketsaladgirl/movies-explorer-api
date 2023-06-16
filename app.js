@@ -9,9 +9,10 @@ const router = require('./routes');
 
 const handleError = require('./middlewares/handelError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { limiter, baseUrl } = require('./utils/option');
 
 const {
-  MONGO_URL = 'mongodb://127.0.0.1:27017/bitfilmsdb',
+  MONGO_URL = baseUrl,
   PORT = 3000,
 } = process.env;
 
@@ -23,6 +24,7 @@ app.use(helmet());
 app.use(express.json());
 
 app.use(requestLogger);
+app.use(limiter);
 
 app.use(router);
 
