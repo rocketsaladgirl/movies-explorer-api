@@ -14,10 +14,11 @@ const NotFoundError = require('../errors/NotFoundError');
 router.post('/singup', validationCreateUser, createUser);
 router.post('/singin', validationLogin, login);
 
+router.use(auth);
+
 router.use('/users', userRoutes);
 router.use('/movies', movieRoutes);
 
-router.use(auth);
 router.use('/*', (req, res, next) => {
   next(new NotFoundError('404: Ошибка! Данные не найдены!'));
 });

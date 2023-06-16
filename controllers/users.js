@@ -8,31 +8,6 @@ const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
 
-// module.exports.getUsers = (req, res, next) => {
-//   userSchema
-//     .find({})
-//     .then((users) => res.status(200)
-//       .send(users))
-//     .catch(next);
-// };
-
-// const findUser = (id, res, next) => {
-//   userSchema
-//     .findById(id)
-//     .orFail()
-//     .then((user) => res.status(200).send(user))
-//     .catch((err) => {
-//       if (err.name === 'DocumentNotFoundError') {
-//         return next(new NotFoundError('Пользователь по данному _id не найден'));
-//       }
-//       return next(err);
-//     });
-// };
-
-// module.exports.getUser = (req, res, next) => findUser(req.user._id, res, next);
-
-// module.exports.getUserById = (req, res, next) => findUser(req.params.userId, res, next);
-
 // Получаем информацию о текущем пользователе
 module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
