@@ -10,102 +10,101 @@ const ConflictError = require('../errors/ConflictError');
 
 const {
   EMAIL_ALREADY_EXISTS,
-  WRONG_PROFILE,
-  WRONG_USER,
+  WRONG_UPDATE_PROFILE,
+  WRONG_CREATE_USER,
   USER_ID_NOT_FOUND,
   USER_NOT_FOUND,
-  WRONG_DATA,
+  USER_ALREADY_EXISTS,
 } = require('../utils/constants');
 
-const { jwtKey } = require('../utils/option');
+const { jwtKey } = require('../utils/option'); // JWT_SECRET_DEV
 
+// Получение данных о пользователе - getCurrentUser
 module.exports.getUser = (req, res, next) => {
+  const userId = req.user._id;
   userSchema
-    .findById(req.user._id)
+    .findById(userId)
+    .orFail(() => {
+      throw new NotFoundError(USER_ID_NOT_FOUND); // Пользователь с указанным _id не найден.
+    })
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError(USER_NOT_FOUND);
-      }
-      res.status(200)
-        .send(user);
+      res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(BadRequestError(WRONG_DATA));
+      if (err.name === 'CastError') {
+        next(new BadRequestError(USER_NOT_FOUND)); // Пользователь не найден.
       } else {
         next(err);
       }
     });
 };
 
+// Создание пользователя
 module.exports.createUser = (req, res, next) => {
   const {
     name,
     email,
     password,
-  } = req.body;
+  } = req.body; // блока не было
 
-  bcrypt.hash(password, 10)
-    .then((hash) => {
-      userSchema
-        .create({
-          name,
-          email,
-          password: hash,
-        })
-        .then(() => res.status(201)
-          .send(
-            {
-              data: {
-                name,
-                email,
-              },
-            },
-          ))
-        .catch((err) => {
-          if (err.code === 11000) {
-            return next(new ConflictError(EMAIL_ALREADY_EXISTS));
-          }
-          if (err.name === 'ValidationError') {
-            return next(new BadRequestError(WRONG_USER));
-          }
-          return next(err);
-        });
-    })
-    .catch(next);
+  bcrypt.hash(password, 10) // было (req.body.password, 10)
+    .then((hash) => userSchema.create({
+      email, // было email: req.body.email,
+      password: hash, // было password: hash,
+      name, // было name: req.body.name
+    }))
+    .then((user) => res.status(201).send({
+      email: user.email,
+      name: user.name,
+      _id: user._id,
+    }))
+    .catch((err) => {
+      if (err.code === 11000) {
+        next(new ConflictError(EMAIL_ALREADY_EXISTS)); // Пользователь с таким email уже существует.
+      } else if (err.name === 'ValidationError') {
+        // eslint-disable-next-line max-len
+        next(new BadRequestError(WRONG_CREATE_USER)); // Переданы некорректные данные при создании пользователя.
+      } else {
+        next(err);
+      }
+    });
 };
 
+// Модификация пользователя
 module.exports.updateUser = (req, res, next) => {
   const {
-    name,
     email,
+    name,
   } = req.body;
 
   userSchema
     .findByIdAndUpdate(
       req.user._id,
-      {
-        name,
-        email,
-      },
+      { email, name },
       {
         new: true,
         runValidators: true,
       },
     )
     .orFail(() => {
-      throw new NotFoundError(USER_ID_NOT_FOUND);
+      throw new NotFoundError(USER_ID_NOT_FOUND); // Пользователь с указанным _id не найден.
     })
-    .then((user) => res.status(200)
-      .send(user))
+    .then((user) => {
+      res.send(user);
+    })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new BadRequestError(WRONG_PROFILE));
+      if (err.code === 11000) {
+        next(new ConflictError(USER_ALREADY_EXISTS)); // Такой пользователь уже существует.
+      } else if (err.name === 'ValidationError') {
+        // eslint-disable-next-line max-len
+        next(new BadRequestError(WRONG_UPDATE_PROFILE)); // Переданы некорректные данные при обновлении профиля.
+      } else {
+        next(err);
       }
-      return next(err);
     });
 };
 
+// Логин пользователя - не правим
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
