@@ -8,13 +8,15 @@ const {
   NOT_FOUND_MOVIE,
   WRONG_MOVIE,
   ACCESS_ERROR,
-  DELETE_MOVIE_SUCCESS,
+  DELETE_WRONG_MOVIE,
 } = require('../utils/constants');
 
 // Возвращаем сохранённые текущим пользователем фильмы
 module.exports.getMovies = (req, res, next) => {
   movieSchema.find({ owner: req.user._id })
-    .then((movies) => res.send(movies.reverse()))
+    .then((movies) => {
+      res.send(movies);
+    })
     .catch(next);
 };
 
@@ -33,7 +35,6 @@ module.exports.createMovie = (req, res, next) => {
     nameRU,
     nameEN,
   } = req.body;
-  const owner = req.user._id;
 
   movieSchema
     .create({
@@ -48,12 +49,14 @@ module.exports.createMovie = (req, res, next) => {
       movieId,
       nameRU,
       nameEN,
-      owner,
+      owner: req.user._id,
     })
     .then((movie) => res.send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError(WRONG_MOVIE));
+        next(
+          new BadRequestError(WRONG_MOVIE), // Переданы некорректные данные при создании фильма.
+        );
       } else {
         next(err);
       }
@@ -62,19 +65,28 @@ module.exports.createMovie = (req, res, next) => {
 
 // Удаляем фильм
 module.exports.deleteMovie = (req, res, next) => {
-  const { movieId } = req.params;
-  const userId = req.user._id;
-
-  movieSchema
-    .findById(movieId)
-    .orFail(new NotFoundError(NOT_FOUND_MOVIE))
-    .then((movie) => {
-      if (movie.owner.toString() !== userId) {
-        return next(new ForbiddenError(ACCESS_ERROR));
-      }
-      return movieSchema.deleteOne(movie)
-        .then(() => res.status(200)
-          .send({ message: DELETE_MOVIE_SUCCESS }));
+  movieSchema.findById(req.params.movieId)
+    .orFail(() => {
+      throw new NotFoundError(NOT_FOUND_MOVIE); // Фильм с указанным _id не найден.
     })
-    .catch(next);
+    .then((movie) => {
+      const owner = movie.owner.toString();
+      if (req.user._id === owner) {
+        movieSchema.deleteOne(movie)
+          .then(() => {
+            res.send(movie);
+          })
+          .catch(next);
+      } else {
+        // eslint-disable-next-line max-len
+        throw new ForbiddenError(ACCESS_ERROR); // Отказано в доступе! Данный фильм не принадлежит пользователю!
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new BadRequestError(DELETE_WRONG_MOVIE)); // Переданы некорректные данные при удалении!
+      } else {
+        next(err);
+      }
+    });
 };
