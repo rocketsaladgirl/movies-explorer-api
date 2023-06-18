@@ -4,17 +4,17 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
 const cors = require('cors');
+const limiter = require('./middlewares/rateLimit');
 
-const router = require('./routes');
+const router = require('./routes/index');
 
 const handleError = require('./middlewares/handelError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const { limiter, baseUrl } = require('./utils/option');
+const { baseUrl } = require('./utils/option');
 
-const {
-  MONGO_URL = baseUrl,
-  PORT = 3000,
-} = process.env;
+const { NODE_ENV, MONGO_URL } = process.env;
+
+const { PORT = 3000 } = process.env;
 
 const app = express();
 
@@ -34,7 +34,7 @@ app.use(handleError);
 
 async function start() {
   try {
-    await mongoose.connect(MONGO_URL);
+    await mongoose.connect(NODE_ENV === 'production' ? MONGO_URL : baseUrl);
     await app.listen(PORT);
   } catch (err) {
     // eslint-disable-next-line no-console
