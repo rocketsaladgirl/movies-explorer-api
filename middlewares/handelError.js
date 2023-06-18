@@ -7,4 +7,4 @@ module.exports = (err, req, res, next) => {
       message: statusCode === 500 ? SERVER_ERROR : message,
     });
   next();
-};
+}; // errorHandler
