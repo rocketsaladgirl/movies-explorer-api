@@ -18,11 +18,11 @@ router.post('/signin', validationLogin, login);
 
 router.use(auth);
 
-router.use('/users', userRoutes);
-router.use('/movies', movieRoutes);
+router.use('/', userRoutes);
+router.use('/', movieRoutes);
 
-router.use('/*', (req, res, next) => {
-  next(new NotFoundError(URL_NOT_FOUND));
+router.use('*', (req, res, next) => {
+  next(new NotFoundError(URL_NOT_FOUND)); // 404: Ошибка! Данные не найдены!
 });
 
 module.exports = router;

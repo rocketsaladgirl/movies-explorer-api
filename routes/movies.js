@@ -4,8 +4,8 @@ const movieRoutes = require('express')
 const { getMovies, createMovie, deleteMovie } = require('../controllers/movies');
 const { validateCreateMovie, validateDeleteMovie } = require('../middlewares/validations');
 
-movieRoutes.get('/', getMovies);
-movieRoutes.post('/', validateCreateMovie, createMovie);
-movieRoutes.delete('/:movieId', validateDeleteMovie, deleteMovie);
+movieRoutes.get('/movies', getMovies);
+movieRoutes.post('/movies', validateCreateMovie, createMovie);
+movieRoutes.delete('/movies/:movieId', validateDeleteMovie, deleteMovie);
 
 module.exports = movieRoutes;
