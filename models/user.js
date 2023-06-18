@@ -45,7 +45,7 @@ userSchema.statics.findUserByCredentials = function findOne(email, password) {
             // eslint-disable-next-line max-len
             return Promise.reject(new NotAuthError(WRONG_EMAIL_OR_PASSWORD)); // Неправильная почта или пароль
           }
-          return user; // теперь user доступен
+          return user;
         });
     });
 };

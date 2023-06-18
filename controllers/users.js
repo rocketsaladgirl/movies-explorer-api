@@ -17,9 +17,9 @@ const {
   USER_ALREADY_EXISTS,
 } = require('../utils/constants');
 
-const { jwtKey } = require('../utils/option'); // JWT_SECRET_DEV
+const { jwtKey } = require('../utils/option');
 
-// Получение данных о пользователе - getCurrentUser
+// Получение данных о пользователе
 module.exports.getUser = (req, res, next) => {
   const userId = req.user._id;
   userSchema
@@ -45,13 +45,13 @@ module.exports.createUser = (req, res, next) => {
     name,
     email,
     password,
-  } = req.body; // блока не было
+  } = req.body;
 
-  bcrypt.hash(password, 10) // было (req.body.password, 10)
+  bcrypt.hash(password, 10)
     .then((hash) => userSchema.create({
-      email, // было email: req.body.email,
-      password: hash, // было password: hash,
-      name, // было name: req.body.name
+      email,
+      password: hash,
+      name,
     }))
     .then((user) => res.status(201).send({
       email: user.email,
@@ -104,7 +104,7 @@ module.exports.updateUser = (req, res, next) => {
     });
 };
 
-// Логин пользователя - не правим
+// Логин пользователя
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 

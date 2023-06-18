@@ -51,7 +51,7 @@ module.exports.validateCreateMovie = celebrate({
   }),
 });
 
-// Удаление фильма - deleteMovieValidator
+// Удаление фильма
 module.exports.validateDeleteMovie = celebrate({
   params: Joi.object().keys({
     movieId: Joi.string().hex().length(24),
