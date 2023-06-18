@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
+const isURL = require('validator/lib/isURL');
 
 const { WRONG_URL } = require('../utils/constants');
 
@@ -27,27 +27,27 @@ const movieSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    validate: {
-      validator: (v) => validator.isUrl(v),
-      message: WRONG_URL,
-    },
     required: true,
+    validate: {
+      validator: (v) => isURL(v),
+      message: WRONG_URL, // Некорректная ссылка
+    },
   },
   trailerLink: {
     type: String,
-    validate: {
-      validator: (v) => validator.isUrl(v),
-      message: WRONG_URL,
-    },
     required: true,
+    validate: {
+      validator: (v) => isURL(v),
+      message: WRONG_URL, // Некорректная ссылка
+    },
   },
   thumbnail: {
     type: String,
-    validate: {
-      validator: (v) => validator.isUrl(v),
-      message: WRONG_URL,
-    },
     required: true,
+    validate: {
+      validator: (v) => isURL(v),
+      message: WRONG_URL, // Некорректная ссылка
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -56,7 +56,7 @@ const movieSchema = new mongoose.Schema({
   },
   movieId: {
     type: Number,
-    require: true,
+    required: true,
   },
   nameRU: {
     type: String,

@@ -1,49 +1,51 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const isEmail = require('validator/lib/isEmail');
 
 const NotAuthError = require('../errors/NotAuthError');
 const { WRONG_EMAIL_OR_PASSWORD, WRONG_EMAIL } = require('../utils/constants');
 
 // eslint-disable-next-line function-paren-newline
 const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    minlength: 2,
-    maxlength: 30,
-    required: true,
-  },
   email: {
     type: String,
+    required: true,
     unique: true,
     validate: {
-      validator: (v) => validator.isEmail(v),
-      message: WRONG_EMAIL,
+      validator: (v) => isEmail(v),
+      message: WRONG_EMAIL, // Неправильный формат почты
     },
-    required: true,
   },
   password: {
     type: String,
     required: true,
     select: false,
   },
+  name: {
+    type: String,
+    required: true,
+    minlength: 2,
+    maxlength: 30,
+  },
 },
 // eslint-disable-next-line function-paren-newline
 { versionKey: false });
 
-// eslint-disable-next-line func-names
-userSchema.statics.findUserByCredentials = function (email, password) {
+userSchema.statics.findUserByCredentials = function findOne(email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new NotAuthError(WRONG_EMAIL_OR_PASSWORD));
+        // eslint-disable-next-line max-len
+        return Promise.reject(new NotAuthError(WRONG_EMAIL_OR_PASSWORD)); // Неправильная почта или пароль
       }
+
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new NotAuthError(WRONG_EMAIL_OR_PASSWORD));
+            // eslint-disable-next-line max-len
+            return Promise.reject(new NotAuthError(WRONG_EMAIL_OR_PASSWORD)); // Неправильная почта или пароль
           }
-          return user;
+          return user; // теперь user доступен
         });
     });
 };

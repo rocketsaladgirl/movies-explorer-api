@@ -1,7 +1,7 @@
 const AUTH_REQUIRED = 'Необходима авторизация!';
 const SERVER_ERROR = 'На сервере произошла ошибка.';
 const WRONG_EMAIL_OR_PASSWORD = 'Неправильная почта или пароль.';
-const WRONG_EMAIL = 'Некорректный email.';
+const WRONG_EMAIL = 'Неправильный формат почты.';
 const WRONG_URL = 'Некорректная ссылка.';
 const URL_NOT_FOUND = '404: Ошибка! Данные не найдены!';
 const WRONG_DATA = 'Переданы некорректные данные.';
@@ -9,7 +9,7 @@ const WRONG_DATA = 'Переданы некорректные данные.';
 // Блок пользователя
 const EMAIL_ALREADY_EXISTS = 'Пользователь с таким email уже существует.';
 const WRONG_CREATE_USER = 'Переданы некорректные данные при создании пользователя.';
-const WRONG_PROFILE = 'Переданы некорректные данные при обновлении профиля.';
+const WRONG_UPDATE_PROFILE = 'Переданы некорректные данные при обновлении профиля.';
 const USER_ID_NOT_FOUND = 'Пользователь с указанным _id не найден.';
 const USER_NOT_FOUND = 'Пользователь не найден.';
 const USER_ALREADY_EXISTS = 'Такой пользователь уже существует.';
@@ -23,7 +23,7 @@ const DELETE_WRONG_MOVIE = 'Переданы некорректные данны
 module.exports = {
   EMAIL_ALREADY_EXISTS,
   WRONG_CREATE_USER,
-  WRONG_PROFILE,
+  WRONG_UPDATE_PROFILE,
   USER_NOT_FOUND,
   USER_ID_NOT_FOUND,
   USER_ALREADY_EXISTS,
