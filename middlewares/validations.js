@@ -1,12 +1,12 @@
 const { celebrate, Joi } = require('celebrate');
 
-const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
+const urlRegex = /(https?:\/\/)(w{3}\.)?\w+[-.~:/?#[\]@!$&'()*+,;=]*#?/;
 
 // Регистрация пользователя
 module.exports.validationCreateUser = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    email: Joi.string().required().email({ tlds: { allow: false } }),
+    email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
 });
@@ -14,7 +14,7 @@ module.exports.validationCreateUser = celebrate({
 // Логин пользователя
 module.exports.validationLogin = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().email({ tlds: { allow: false } }),
+    email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
 });
@@ -23,7 +23,7 @@ module.exports.validationLogin = celebrate({
 module.exports.validationUpdateUser = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    email: Joi.string().required().email({ tlds: { allow: false } }),
+    email: Joi.string().required().email(),
   }),
 });
 
@@ -54,6 +54,6 @@ module.exports.validateCreateMovie = celebrate({
 // Удаление фильма
 module.exports.validateDeleteMovie = celebrate({
   params: Joi.object().keys({
-    movieId: Joi.string().hex().length(24),
+    _id: Joi.string().required().hex().length(24),
   }),
 });
