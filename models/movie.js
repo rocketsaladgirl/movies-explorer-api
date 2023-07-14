@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const isURL = require('validator/lib/isURL');
+const isURL = require('validator/lib/isURL'); // const validator = require('validator');
 
 const { WRONG_URL } = require('../utils/constants');
 
@@ -29,7 +29,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => isURL(v),
+      validator: (v) => isURL(v, { require_protocol: true, require_valid_protocol: true, protocols: ['http', 'https', 'ftp'] }),
       message: WRONG_URL, // Некорректная ссылка
     },
   },
@@ -37,7 +37,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => isURL(v),
+      validator: (v) => isURL(v, { require_protocol: true, require_valid_protocol: true, protocols: ['http', 'https', 'ftp'] }),
       message: WRONG_URL, // Некорректная ссылка
     },
   },
@@ -45,7 +45,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => isURL(v),
+      validator: (v) => isURL(v, { require_protocol: true, require_valid_protocol: true, protocols: ['http', 'https', 'ftp'] }),
       message: WRONG_URL, // Некорректная ссылка
     },
   },
