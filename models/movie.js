@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const isURL = require('validator/lib/isURL'); // const validator = require('validator');
+const isURL = require('validator/lib/isURL');
 
 const { WRONG_URL } = require('../utils/constants');
 
